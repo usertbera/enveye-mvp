@@ -1,6 +1,8 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from deepdiff import DeepDiff
 import openai
 from openai import OpenAI
@@ -21,10 +23,15 @@ app.add_middleware(
 # --- Setup OpenAI client ---
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+# --- Serve Frontend Static Files (React Build) ---
+app.mount("/static", StaticFiles(directory="../enveye-frontend/dist/assets"), name="static")
+
+
 # --- Root Endpoint ---
 @app.get("/")
-def read_root():
-    return {"message": "Welcome to EnvEye Context Comparator API 🚀. Use /compare and /explain"}
+async def serve_spa():
+    return FileResponse("../enveye-frontend/dist/index.html")
+
 
 # --- Compare Endpoint ---
 @app.post("/compare")
