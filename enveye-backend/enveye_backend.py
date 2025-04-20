@@ -55,18 +55,15 @@ async def explain_diff(diff: dict):
 You are a helpful assistant specialized in IT system configuration comparisons.
 Given the following DeepDiff output between two VMs, do the following:
 
-1. List each DLL file that changed, added, or removed, mentioning the file name and old/new version.
-2. List services that were stopped, missing, or started.
-3. List environment variables that changed.
-4. Provide findings as bullet points, one finding per line.
-5. Be detailed but concise.
-6. Do NOT repeat generic summary, focus on concrete facts.
+1. Give a summary of what has changed
+2. Give a solution if possible
+3. Be concised and try to highlight important issues.
 
 Here is the diff data:
 {diff}
 """
 
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel('gemini-2.5-pro-exp-03-25')
         response = model.generate_content(prompt)
 
         explanation = response.text
