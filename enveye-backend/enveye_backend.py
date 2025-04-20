@@ -1,11 +1,9 @@
 from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from deepdiff import DeepDiff
-import openai
-from openai import OpenAI
+import google.generativeai as genai
 import json
 import os
 
@@ -20,18 +18,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- Setup OpenAI client ---
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# --- Setup Gemini Client ---
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # --- Serve Frontend Static Files (React Build) ---
-app.mount("/static", StaticFiles(directory="../enveye-frontend/dist/assets"), name="static")
-
+app.mount("/static", StaticFiles(directory="../enveye-frontend/dist"), name="static")
 
 # --- Root Endpoint ---
 @app.get("/")
 async def serve_spa():
     return FileResponse("../enveye-frontend/dist/index.html")
-
 
 # --- Compare Endpoint ---
 @app.post("/compare")
@@ -70,18 +66,11 @@ Here is the diff data:
 {diff}
 """
 
+        model = genai.GenerativeModel('gemini-pro')
+        response = model.generate_content(prompt)
 
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # Cheapest, fastest model
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant specialized in IT systems and QA testing."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.5,
-            max_tokens=500
-        )
+        explanation = response.text
 
-        explanation = response.choices[0].message.content
         return {"explanation": explanation}
 
     except Exception as e:
