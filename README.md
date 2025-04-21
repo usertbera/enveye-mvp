@@ -84,12 +84,12 @@ pyinstaller --onefile --clean collector_agent.py
 
 | Variable         | Purpose                               |
 | ---------------- | ------------------------------------- |
-| `OPENAI_API_KEY` | API key for GPT-3.5-Turbo integration |
+| `GOOGLE_API_KEY` | API key for Gemini integration |
 
 **You can also create a ****\`\`**** file:**
 
 ```plaintext
-OPENAI_API_KEY=your-openai-api-key-here
+GOOGLE_API_KEY=your-openai-api-key-here
 ```
 
 ---
