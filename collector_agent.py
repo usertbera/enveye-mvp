@@ -156,35 +156,33 @@ def spinner_task():
     for c in itertools.cycle(['|', '/', '-', '\\']):
         if not spinner_running:
             break
-        sys.stdout.write(f'\r⏳ Collecting... {c}')
+        sys.stdout.write(f'\rCollecting... {c}')
         sys.stdout.flush()
         time.sleep(0.1)
-    sys.stdout.write('\r')  # Clear the line at end
+    sys.stdout.write('\r')
 
 # ---- [ Main Application Starts Here ] ----
 
 def main():
     global spinner_running
-    print("🚀 Welcome to EnvEye Collector!")
-    app_folder = input("📁 Enter the Application Folder Path (e.g., C:\\Program Files\\SampleApp): ").strip()
-    app_type = input("🖥️ Is this a 'desktop' or 'web' application? ").strip().lower()
+    print("Welcome to EnvEye Collector!")
+    app_folder = input("Enter the Application Folder Path (e.g., C:\\Program Files\\SampleApp): ").strip()
+    app_type = input("Is this a 'desktop' or 'web' application? ").strip().lower()
 
     if not os.path.exists(app_folder):
-        print(f"❌ Error: The folder {app_folder} does not exist.")
+        print(f"Error: The folder {app_folder} does not exist.")
         return
 
     config_file_path = find_config_file(app_folder, app_type)
     if not config_file_path:
-        print(f"⚠️ Warning: Could not find config file for {app_type} app in {app_folder}")
+        print(f"Warning: Could not find config file for {app_type} app in {app_folder}")
 
-    # Start spinner
     spinner_running = True
     spinner_thread = threading.Thread(target=spinner_task)
     spinner_thread.start()
 
-    # --- Data Collection Starts ---
     registry_keys_to_read = [
-        r"HKEY_LOCAL_MACHINE\SOFTWARE\SampleApp\Settings"
+        r"HKEY_LOCAL_MACHINE\\SOFTWARE\\SampleApp\\Settings"
     ]
     services_to_check = [
         "MSSQL$SQLEXPRESS",
@@ -213,11 +211,10 @@ def main():
     with open(output_file, "w") as f:
         json.dump(mcp_context, f, indent=4)
 
-    # Stop spinner
     spinner_running = False
     spinner_thread.join()
 
-    print("\n✅ Context snapshot saved successfully to", output_file)
+    print("\nContext snapshot saved successfully to", output_file)
 
 if __name__ == "__main__":
     main()

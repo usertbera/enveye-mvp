@@ -82,21 +82,21 @@ function DiffViewer({ diffData }) {
         {/* Left Panel - Differences Table */}
         <div className="flex-1 bg-white rounded-lg shadow-lg p-4 overflow-auto max-h-[80vh]">
           <h3 className="text-2xl font-semibold mb-4">🔍 Differences</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="bg-gray-200 text-gray-700">
-                  <th className="px-4 py-2 text-left w-32 whitespace-nowrap">Type</th>
-                  <th className="px-4 py-2 text-left">Path</th>
-                  <th className="px-4 py-2 text-left w-40 whitespace-nowrap">Old Value</th>
-                  <th className="px-4 py-2 text-left w-40 whitespace-nowrap">New Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {parsedRows}
-              </tbody>
-            </table>
-          </div>
+          <div className="overflow-x-auto max-h-[70vh] overflow-y-auto border rounded-lg shadow">
+		  <table className="min-w-full bg-white">
+			<thead className="sticky top-0 bg-gray-200">
+			  <tr className="text-gray-700">
+				<th className="px-4 py-2 text-left">Type</th>
+				<th className="px-4 py-2 text-left">Path</th>
+				<th className="px-4 py-2 text-left">Old Value</th>
+				<th className="px-4 py-2 text-left">New Value</th>
+			  </tr>
+			</thead>
+			<tbody>
+			  {parsedRows}
+			</tbody>
+		  </table>
+		</div>
         </div>
 
         {/* Right Panel - Explain Section */}
