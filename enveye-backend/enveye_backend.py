@@ -41,25 +41,26 @@ SNAPSHOT_DIR.mkdir(exist_ok=True)
 
 # --- Upload Snapshot API ---
 @app.post("/upload_snapshot")
-async def upload_snapshot(request: Request, snapshot: UploadFile = File(...)):
+async def upload_snapshot(snapshot: UploadFile = File(...)):
     try:
-        form_data = await request.form()
-        hostname = form_data.get("hostname", "unknown_host")
-        
         content = await snapshot.read()
+        if not content:
+            raise ValueError("Empty file uploaded")
+
         parsed_content = json.loads(content)
+        hostname = parsed_content.get("application_name", "unknown_host")
 
         filename = SNAPSHOT_DIR / f"{hostname}_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
 
         with open(filename, "w") as f:
             f.write(json.dumps(parsed_content, indent=4))
 
-        print(f"\u2705 Snapshot received and saved: {filename}")
+        print(f"✅ Snapshot received and saved: {filename}")
 
         return {"message": f"Snapshot from {hostname} collected successfully!"}
 
     except Exception as e:
-        print(f"\u274C Error while saving snapshot: {e}")
+        print(f"❌ Error while saving snapshot: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 # --- Compare Snapshots API ---
@@ -77,7 +78,7 @@ async def compare_snapshots(file1: UploadFile = File(...), file2: UploadFile = F
         return JSONResponse(content={"differences": json.loads(diff.to_json())})
 
     except Exception as e:
-        print(f"\u274C Exception during /compare: {e}")
+        print(f"❌ Exception during /compare: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=400)
 
 # --- Explain Differences API ---
@@ -101,7 +102,7 @@ Here is the diff data:
         return {"explanation": response.text}
 
     except Exception as e:
-        print(f"\u274C Error during AI explanation: {e}")
+        print(f"❌ Error during AI explanation: {e}")
         return {"error": str(e)}
 
 # --- Remote Collection API ---
@@ -115,7 +116,10 @@ async def remote_collect(request: Request):
         app_folder = body.get("app_folder")
         app_type = body.get("app_type")
 
-        print(f"\u2705 Remote Collect Request: {vm_ip}, AppFolder={app_folder}")
+        if not vm_ip or not app_folder or not app_type:
+            return JSONResponse(content={"error": "Missing required fields."}, status_code=400)
+
+        print(f"✅ Remote Collect Request: {vm_ip}, AppFolder={app_folder}")
 
         session = winrm.Session(
             f'http://{vm_ip}:5985/wsman',
@@ -123,7 +127,7 @@ async def remote_collect(request: Request):
             transport='ntlm'
         )
 
-        backend_ip = "10.82.0.78"  # TODO: Set your backend server IP here!
+        backend_ip = os.getenv("BACKEND_IP", "10.40.10.214")
         upload_url = f"http://{backend_ip}:8000/upload_snapshot"
 
         collector_command = (
@@ -133,7 +137,7 @@ async def remote_collect(request: Request):
             f'--upload-url {upload_url}"'
         )
 
-        print(f"\u2705 Prepared Command: {collector_command}")
+        print(f"✅ Prepared Command: {collector_command}")
 
         def run_remote_cmd():
             return session.run_cmd(collector_command)
@@ -143,22 +147,26 @@ async def remote_collect(request: Request):
             try:
                 result = future.result(timeout=900)
             except concurrent.futures.TimeoutError:
-                print("\u274C Remote Collector Timed Out after 10 minutes!")
+                print("❌ Remote Collector Timed Out after 10 minutes!")
                 return JSONResponse(content={"error": "Timeout after 10 minutes."}, status_code=500)
 
-        print(f"\u2705 Remote Collector exited with code {result.status_code}")
-        print("\u2705 StdOut:", result.std_out.decode(errors="ignore"))
-        print("\u2705 StdErr:", result.std_err.decode(errors="ignore"))
+        print(f"✅ Remote Collector exited with code {result.status_code}")
+        print("✅ StdOut:", result.std_out.decode(errors="ignore"))
+        print("✅ StdErr:", result.std_err.decode(errors="ignore"))
 
-        if result.status_code != 0:
+        if result.status_code == 0:
+            return {
+                "status": "success",
+                "message": f"Snapshot from {vm_ip} collected and uploaded!",
+                "vm_hostname": vm_ip
+            }
+        else:
             return JSONResponse(
                 content={"error": f"Remote agent failed. Code {result.status_code}"},
                 status_code=500
             )
 
-        return {"status": "success", "message": f"Snapshot from {vm_ip} collected and uploaded!"}
-
     except Exception as e:
-        print("\u274C FULL EXCEPTION in /remote_collect")
+        print("❌ FULL EXCEPTION in /remote_collect")
         print(traceback.format_exc())
         return JSONResponse(content={"error": str(e)}, status_code=500)

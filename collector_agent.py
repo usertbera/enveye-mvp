@@ -1,3 +1,5 @@
+# --- collector_agent.py (FINAL FIXED VERSION) ---
+
 import os
 import json
 import platform
@@ -7,11 +9,24 @@ import threading
 import itertools
 import sys
 import time
+import argparse
+import requests
 from pathlib import Path
 from datetime import datetime
 
-# ---- [ Functions start here ] ----
+# --- Spinner utilities ---
+spinner_running = False
 
+def spinner_task():
+    for c in itertools.cycle(['|', '/', '-', '\\']):
+        if not spinner_running:
+            break
+        sys.stdout.write(f'\rCollecting... {c}')
+        sys.stdout.flush()
+        time.sleep(0.1)
+    sys.stdout.write('\r')
+
+# --- Helper Functions ---
 def get_os_info():
     return {
         "name": platform.system(),
@@ -22,15 +37,17 @@ def get_os_info():
 
 def get_dotnet_versions():
     try:
-        output = subprocess.check_output(["powershell", "-Command", 
+        output = subprocess.check_output([
+            "powershell", "-Command",
             "Get-ChildItem 'HKLM:\\SOFTWARE\\Microsoft\\NET Framework Setup\\NDP' -Recurse | "
             "Get-ItemProperty -Name Version -ErrorAction SilentlyContinue | "
             "Where { $_.PSChildName -match '^(?!S)\\p{L}'} | "
-            "Select-Object -ExpandProperty Version"], text=True)
+            "Select-Object -ExpandProperty Version"
+        ], text=True)
         versions = [line.strip() for line in output.splitlines() if line.strip()]
         return versions
     except Exception as e:
-        return ["Error retrieving .NET versions: " + str(e)]
+        return [f"Error retrieving .NET versions: {e}"]
 
 def list_dll_versions(app_folder_path):
     dll_versions = {}
@@ -44,25 +61,26 @@ def list_dll_versions(app_folder_path):
                 file_version_output = subprocess.check_output([
                     "powershell", "-Command",
                     f"(Get-Item '{file_path}').VersionInfo.FileVersion"
-                ], text=True)
+                ], text=True, timeout=10)
                 file_version = file_version_output.strip()
 
-                assembly_version_output = subprocess.check_output([
-                    "powershell", "-Command",
-                    f"([Reflection.AssemblyName]::GetAssemblyName('{file_path}')).Version.ToString()"
-                ], text=True)
-                assembly_version = assembly_version_output.strip()
+                try:
+                    assembly_version_output = subprocess.check_output([
+                        "powershell", "-Command",
+                        f"([Reflection.AssemblyName]::GetAssemblyName('{file_path}')).Version.ToString()"
+                    ], text=True, timeout=10)
+                    assembly_version = assembly_version_output.strip()
+                except:
+                    assembly_version = "Not .NET Assembly"
 
                 dll_versions[file] = {
                     "file_version": file_version,
                     "assembly_version": assembly_version
                 }
+            except subprocess.TimeoutExpired:
+                dll_versions[file] = {"file_version": "Timeout", "assembly_version": "Timeout"}
             except Exception as e:
-                dll_versions[file] = {
-                    "file_version": "Unknown",
-                    "assembly_version": "Unknown",
-                    "error": str(e)
-                }
+                dll_versions[file] = {"file_version": "Unknown", "assembly_version": "Unknown", "error": str(e)}
     return dll_versions
 
 def find_config_file(app_folder, app_type):
@@ -149,48 +167,33 @@ def read_environment_variables(variable_names):
         env_vars[var] = value
     return env_vars
 
-# --- Spinner utilities ---
-spinner_running = False
-
-def spinner_task():
-    for c in itertools.cycle(['|', '/', '-', '\\']):
-        if not spinner_running:
-            break
-        sys.stdout.write(f'\rCollecting... {c}')
-        sys.stdout.flush()
-        time.sleep(0.1)
-    sys.stdout.write('\r')
-
-# ---- [ Main Application Starts Here ] ----
-
+# --- Main ---
 def main():
     global spinner_running
     print("Welcome to EnvEye Collector!")
-    app_folder = input("Enter the Application Folder Path (e.g., C:\\Program Files\\SampleApp): ").strip()
-    app_type = input("Is this a 'desktop' or 'web' application? ").strip().lower()
 
-    if not os.path.exists(app_folder):
-        print(f"Error: The folder {app_folder} does not exist.")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--app-folder", help="Path to the application folder")
+    parser.add_argument("--app-type", help="Type of application: desktop or web")
+    parser.add_argument("--upload-url", help="Optional: Upload URL to send snapshot")
+    args = parser.parse_args()
+
+    if not args.app_folder or not args.app_type:
+        print("\u274c Missing required arguments --app-folder and --app-type")
         return
 
+    app_folder = args.app_folder
+    app_type = args.app_type
+
     config_file_path = find_config_file(app_folder, app_type)
-    if not config_file_path:
-        print(f"Warning: Could not find config file for {app_type} app in {app_folder}")
 
     spinner_running = True
     spinner_thread = threading.Thread(target=spinner_task)
     spinner_thread.start()
 
-    registry_keys_to_read = [
-        r"HKEY_LOCAL_MACHINE\\SOFTWARE\\SampleApp\\Settings"
-    ]
-    services_to_check = [
-        "MSSQL$SQLEXPRESS",
-        "W3SVC"
-    ]
-    environment_variables_to_read = [
-        "APP_ENV", "ENVIRONMENT"
-    ]
+    registry_keys_to_read = [r"HKEY_LOCAL_MACHINE\\SOFTWARE\\SampleApp\\Settings"]
+    services_to_check = ["MSSQL$SQLEXPRESS", "W3SVC"]
+    environment_variables_to_read = ["APP_ENV", "ENVIRONMENT"]
 
     mcp_context = {
         "application_name": Path(app_folder).name,
@@ -204,7 +207,7 @@ def main():
             "required_services_status": check_services(services_to_check),
             "critical_environment_variables": read_environment_variables(environment_variables_to_read)
         },
-        "timestamp": datetime.utcnow().isoformat() + "Z"
+        "timestamp": datetime.now().astimezone().isoformat()
     }
 
     output_file = "context_snapshot.json"
@@ -214,7 +217,25 @@ def main():
     spinner_running = False
     spinner_thread.join()
 
-    print("\nContext snapshot saved successfully to", output_file)
+    print(f"\n Context snapshot saved successfully to {output_file}")
+
+    # --- Try uploading if upload-url provided ---
+    if args.upload_url:
+        try:
+            with open(output_file, "rb") as f:
+                files = {"snapshot": (output_file, f, "application/json")}
+                data = {"hostname": platform.node()}
+
+                print(f"Uploading to {args.upload_url} with hostname {platform.node()}...")
+
+                response = requests.post(args.upload_url, files=files, data=data, timeout=120)
+
+            if response.status_code == 200:
+                print(" Successfully uploaded snapshot to backend!")
+            else:
+                print(f" Failed to upload snapshot. Status: {response.status_code} Response: {response.text}")
+        except Exception as e:
+            print(f" Exception during upload: {e}")
 
 if __name__ == "__main__":
     main()
