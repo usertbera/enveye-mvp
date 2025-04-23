@@ -31,10 +31,6 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 # --- Serve Frontend Static Files ---
 app.mount("/static", StaticFiles(directory="../enveye-frontend/dist"), name="static")
 
-@app.get("/")
-async def serve_spa():
-    return FileResponse("../enveye-frontend/dist/index.html")
-
 # --- Setup Snapshot Directory ---
 BASE_DIR = Path(__file__).resolve().parent
 SNAPSHOT_DIR = BASE_DIR / "snapshots"
@@ -42,6 +38,15 @@ SNAPSHOT_DIR.mkdir(exist_ok=True)
 
 # --- Mount Snapshots as Static ---
 app.mount("/snapshots", StaticFiles(directory=SNAPSHOT_DIR), name="snapshots")
+
+
+@app.get("/")
+async def serve_spa():
+    return FileResponse("../enveye-frontend/dist/index.html")
+    
+@app.get("/snapshots")
+async def serve_spa():
+    return FileResponse("../enveye-frontend/dist/index.html")
 
 # --- Upload Snapshot API ---
 @app.post("/upload_snapshot")
