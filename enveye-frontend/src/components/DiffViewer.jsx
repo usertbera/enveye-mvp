@@ -5,6 +5,7 @@ import { API_BASE_URL } from './api';
 function DiffViewer({ diffData }) {
   const [explanation, setExplanation] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(""); // ✅ error message input
 
   if (!diffData || Object.keys(diffData).length === 0) {
     return <div className="mt-8 text-center text-gray-500">No differences found!</div>;
@@ -23,7 +24,13 @@ function DiffViewer({ diffData }) {
     try {
       setLoading(true);
       setExplanation("");
-      const response = await axios.post(`${API_BASE_URL}/explain`, diffData);
+
+      const payload = {
+        diff: diffData,
+        error_message: errorMsg || ""
+      };
+
+      const response = await axios.post(`${API_BASE_URL}/explain`, payload);
       setExplanation(response.data.explanation);
     } catch (error) {
       console.error("Error explaining differences:", error);
@@ -35,7 +42,6 @@ function DiffViewer({ diffData }) {
 
   const renderChangeRow = (type, path, oldValue, newValue) => {
     let bgColor = "bg-green-100";
-
     if (type === "Removed" || type === "Critical") {
       bgColor = "bg-red-100";
     } else if (type === "Changed") {
@@ -84,24 +90,31 @@ function DiffViewer({ diffData }) {
         <div className="flex-1 bg-white rounded-lg shadow-lg p-4 overflow-auto max-h-[80vh]">
           <h3 className="text-2xl font-semibold mb-4">🔍 Differences</h3>
           <div className="overflow-x-auto max-h-[70vh] overflow-y-auto border rounded-lg shadow">
-		  <table className="min-w-full bg-white">
-			<thead className="sticky top-0 bg-gray-200">
-			  <tr className="text-gray-700">
-				<th className="px-4 py-2 text-left">Type</th>
-				<th className="px-4 py-2 text-left">Path</th>
-				<th className="px-4 py-2 text-left">Old Value</th>
-				<th className="px-4 py-2 text-left">New Value</th>
-			  </tr>
-			</thead>
-			<tbody>
-			  {parsedRows}
-			</tbody>
-		  </table>
-		</div>
+            <table className="min-w-full bg-white">
+              <thead className="sticky top-0 bg-gray-200">
+                <tr className="text-gray-700">
+                  <th className="px-4 py-2 text-left">Type</th>
+                  <th className="px-4 py-2 text-left">Path</th>
+                  <th className="px-4 py-2 text-left">Old Value</th>
+                  <th className="px-4 py-2 text-left">New Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {parsedRows}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Right Panel - Explain Section */}
         <div className="flex-1 bg-white rounded-lg shadow-lg p-4 flex flex-col">
+          <textarea
+            placeholder="Optional: Paste a relevant error message here..."
+            className="w-full px-4 py-2 border rounded mb-4"
+            value={errorMsg}
+            onChange={(e) => setErrorMsg(e.target.value)}
+          />
+
           <div className="flex justify-center mb-4">
             <button
               onClick={handleExplain}

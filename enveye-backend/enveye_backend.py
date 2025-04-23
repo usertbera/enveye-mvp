@@ -12,6 +12,8 @@ import traceback
 from pathlib import Path
 from datetime import datetime
 import base64
+from fastapi import Body
+
 
 # --- FastAPI Application ---
 app = FastAPI(title="EnvEye - Context Comparator API")
@@ -91,18 +93,25 @@ async def compare_snapshots(file1: UploadFile = File(...), file2: UploadFile = F
 
 # --- Explain Differences API ---
 @app.post("/explain")
-async def explain_diff(diff: dict):
+async def explain_diff(payload: dict = Body(...)):
     try:
+        diff = payload.get("diff", {})
+        error_message = payload.get("error_message", "").strip()
+
         prompt = f"""
 You are a helpful assistant specialized in IT system configuration comparisons.
 Given the following DeepDiff output between two VMs, do the following:
 
 1. Give a summary of what has changed
-2. Give a solution if possible
-3. Be concise and highlight important issues
+2. If an error message is provided, analyze it in context of the diff
+3. Suggest possible root causes or solutions
+4. Be concise and highlight important issues
 
-Here is the diff data:
-{diff}
+Diff data:
+{json.dumps(diff, indent=2)}
+
+Error message (if any):
+{error_message or 'None'}
 """
         model = genai.GenerativeModel('gemini-2.5-pro-exp-03-25')
         response = model.generate_content(prompt)
@@ -110,8 +119,9 @@ Here is the diff data:
         return {"explanation": response.text}
 
     except Exception as e:
-        print(f"\u274C Error during AI explanation: {e}")
+        print("❌ Error during AI explanation:", e)
         return {"error": str(e)}
+
 
 # --- Remote Collection API ---
 @app.post("/remote_collect")
