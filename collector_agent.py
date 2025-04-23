@@ -1,5 +1,3 @@
-# --- collector_agent.py (FINAL FIXED VERSION) ---
-
 import os
 import json
 import platform

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-
-const BACKEND_URL = "http://10.40.10.214:8000"; // ⚡ Change here if needed later!
+import { API_BASE_URL } from './api';   // <-- Import base URL
 
 function RemoteCollector() {
   const [ip, setIp] = useState('');
@@ -14,7 +13,7 @@ function RemoteCollector() {
 
   const handleCollect = async () => {
     if (!ip || !appFolder || !appType) {
-      alert("⚠️ Please fill VM IP, App Folder, and App Type!");
+      alert("Please fill VM IP, App Folder and App Type!");
       return;
     }
 
@@ -22,7 +21,7 @@ function RemoteCollector() {
     setStatus('');
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/remote_collect`, {
+      const response = await axios.post(`${API_BASE_URL}/remote_collect`, {
         vm_ip: ip,
         username,
         password,
@@ -31,8 +30,7 @@ function RemoteCollector() {
       });
 
       if (response.data && response.data.status === 'success') {
-        const vmHostname = response.data.vm_hostname || ip;
-        setStatus(`✅ Snapshot collected from ${vmHostname}`);
+        setStatus(`✅ Snapshot collected from ${response.data.vm_hostname}`);
       } else {
         setStatus("❌ Failed to collect snapshot!");
       }
@@ -60,7 +58,7 @@ function RemoteCollector() {
 
         <input
           type="text"
-          placeholder="Username (optional)"
+          placeholder="Username "
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="w-full px-4 py-2 border rounded focus:outline-none focus:ring"
@@ -68,7 +66,7 @@ function RemoteCollector() {
 
         <input
           type="password"
-          placeholder="Password (optional)"
+          placeholder="Password "
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full px-4 py-2 border rounded focus:outline-none focus:ring"
@@ -76,7 +74,7 @@ function RemoteCollector() {
 
         <input
           type="text"
-          placeholder="Application Folder Path (e.g., C:\\Program Files\\SampleApp)"
+          placeholder="Application Folder Path (e.g., C:\Program Files\SampleApp)"
           value={appFolder}
           onChange={(e) => setAppFolder(e.target.value)}
           className="w-full px-4 py-2 border rounded focus:outline-none focus:ring"

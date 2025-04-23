@@ -11,6 +11,7 @@ import concurrent.futures
 import traceback
 from pathlib import Path
 from datetime import datetime
+import base64
 
 # --- FastAPI Application ---
 app = FastAPI(title="EnvEye - Context Comparator API")
@@ -25,7 +26,7 @@ app.add_middleware(
 )
 
 # --- Configure Gemini API ---
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # --- Serve Frontend Static Files ---
 app.mount("/static", StaticFiles(directory="../enveye-frontend/dist"), name="static")
@@ -39,28 +40,30 @@ BASE_DIR = Path(__file__).resolve().parent
 SNAPSHOT_DIR = BASE_DIR / "snapshots"
 SNAPSHOT_DIR.mkdir(exist_ok=True)
 
+# --- Mount Snapshots as Static ---
+app.mount("/snapshots", StaticFiles(directory=SNAPSHOT_DIR), name="snapshots")
+
 # --- Upload Snapshot API ---
 @app.post("/upload_snapshot")
-async def upload_snapshot(snapshot: UploadFile = File(...)):
+async def upload_snapshot(request: Request, snapshot: UploadFile = File(...)):
     try:
-        content = await snapshot.read()
-        if not content:
-            raise ValueError("Empty file uploaded")
+        form_data = await request.form()
+        hostname = form_data.get("hostname", "unknown_host")
 
+        content = await snapshot.read()
         parsed_content = json.loads(content)
-        hostname = parsed_content.get("application_name", "unknown_host")
 
         filename = SNAPSHOT_DIR / f"{hostname}_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
 
         with open(filename, "w") as f:
             f.write(json.dumps(parsed_content, indent=4))
 
-        print(f"✅ Snapshot received and saved: {filename}")
+        print(f"\u2705 Snapshot received and saved: {filename}")
 
         return {"message": f"Snapshot from {hostname} collected successfully!"}
 
     except Exception as e:
-        print(f"❌ Error while saving snapshot: {e}")
+        print(f"\u274C Error while saving snapshot: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 # --- Compare Snapshots API ---
@@ -78,7 +81,7 @@ async def compare_snapshots(file1: UploadFile = File(...), file2: UploadFile = F
         return JSONResponse(content={"differences": json.loads(diff.to_json())})
 
     except Exception as e:
-        print(f"❌ Exception during /compare: {e}")
+        print(f"\u274C Exception during /compare: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=400)
 
 # --- Explain Differences API ---
@@ -102,7 +105,7 @@ Here is the diff data:
         return {"explanation": response.text}
 
     except Exception as e:
-        print(f"❌ Error during AI explanation: {e}")
+        print(f"\u274C Error during AI explanation: {e}")
         return {"error": str(e)}
 
 # --- Remote Collection API ---
@@ -116,10 +119,7 @@ async def remote_collect(request: Request):
         app_folder = body.get("app_folder")
         app_type = body.get("app_type")
 
-        if not vm_ip or not app_folder or not app_type:
-            return JSONResponse(content={"error": "Missing required fields."}, status_code=400)
-
-        print(f"✅ Remote Collect Request: {vm_ip}, AppFolder={app_folder}")
+        print(f"\u2705 Remote Collect Request: {vm_ip}, AppFolder={app_folder}")
 
         session = winrm.Session(
             f'http://{vm_ip}:5985/wsman',
@@ -127,8 +127,28 @@ async def remote_collect(request: Request):
             transport='ntlm'
         )
 
-        backend_ip = os.getenv("BACKEND_IP", "10.40.10.214")
+        backend_ip = "10.40.10.214"
         upload_url = f"http://{backend_ip}:8000/upload_snapshot"
+
+        # Check if agent exists remotely
+        check_command = "if (!(Test-Path 'C:\\Tools\\Collector\\collector_agent.exe')) { exit 1 }"
+        check_result = session.run_ps(check_command)
+
+        if check_result.status_code != 0:
+            print("\u26A1 Remote agent not found, uploading...")
+
+            local_agent_path = BASE_DIR / "collector" / "collector_agent.exe"
+            with open(local_agent_path, "rb") as agent_file:
+                encoded_agent = base64.b64encode(agent_file.read()).decode()
+
+            ps_script = f"""
+            $bytes = [System.Convert]::FromBase64String(\"{encoded_agent}\")
+            $path = 'C:\\Tools\\Collector\\collector_agent.exe'
+            New-Item -ItemType Directory -Force -Path (Split-Path $path) | Out-Null
+            [System.IO.File]::WriteAllBytes($path, $bytes)
+            """
+            upload_result = session.run_ps(ps_script)
+            print("✅ Agent upload result:", upload_result.status_code)
 
         collector_command = (
             f'cmd /c "C:\\Tools\\Collector\\collector_agent.exe '
@@ -137,7 +157,7 @@ async def remote_collect(request: Request):
             f'--upload-url {upload_url}"'
         )
 
-        print(f"✅ Prepared Command: {collector_command}")
+        print(f"\u2705 Prepared Command: {collector_command}")
 
         def run_remote_cmd():
             return session.run_cmd(collector_command)
@@ -147,10 +167,10 @@ async def remote_collect(request: Request):
             try:
                 result = future.result(timeout=900)
             except concurrent.futures.TimeoutError:
-                print("❌ Remote Collector Timed Out after 10 minutes!")
+                print("\u274C Remote Collector Timed Out after 10 minutes!")
                 return JSONResponse(content={"error": "Timeout after 10 minutes."}, status_code=500)
 
-        print(f"✅ Remote Collector exited with code {result.status_code}")
+        print(f"\u2705 Remote Collector exited with code {result.status_code}")
         print("✅ StdOut:", result.std_out.decode(errors="ignore"))
         print("✅ StdErr:", result.std_err.decode(errors="ignore"))
 
@@ -167,6 +187,27 @@ async def remote_collect(request: Request):
             )
 
     except Exception as e:
-        print("❌ FULL EXCEPTION in /remote_collect")
+        print("\u274C FULL EXCEPTION in /remote_collect")
         print(traceback.format_exc())
         return JSONResponse(content={"error": str(e)}, status_code=500)
+        
+        
+@app.get("/list_snapshots")
+async def list_snapshots():
+    try:
+        snapshots = []
+        for file in SNAPSHOT_DIR.glob("*.json"):
+            snapshots.append(file.name)
+        return {"snapshots": snapshots}
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
+
+@app.get("/download_snapshot/{filename}")
+async def download_snapshot(filename: str):
+    file_path = SNAPSHOT_DIR / filename
+    if file_path.exists():
+        return FileResponse(file_path, filename=filename, media_type='application/json')
+    else:
+        return JSONResponse(content={"error": "File not found."}, status_code=404)
+

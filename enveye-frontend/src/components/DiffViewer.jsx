@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from './api';
 
 function DiffViewer({ diffData }) {
   const [explanation, setExplanation] = useState("");
@@ -22,7 +23,7 @@ function DiffViewer({ diffData }) {
     try {
       setLoading(true);
       setExplanation("");
-      const response = await axios.post("http://127.0.0.1:8000/explain", diffData);
+      const response = await axios.post(`${API_BASE_URL}/explain`, diffData);
       setExplanation(response.data.explanation);
     } catch (error) {
       console.error("Error explaining differences:", error);
