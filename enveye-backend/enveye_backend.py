@@ -56,11 +56,16 @@ async def upload_snapshot(request: Request, snapshot: UploadFile = File(...)):
     try:
         form_data = await request.form()
         hostname = form_data.get("hostname", "unknown_host")
+        app_folder = form_data.get("app_path", "unknown_app")
+        app_name = os.path.basename(app_folder)
+        app_name = app_name.replace(" ","")
+        
+        print(f"app name:{app_name}")
 
         content = await snapshot.read()
         parsed_content = json.loads(content)
 
-        filename = SNAPSHOT_DIR / f"{hostname}_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
+        filename = SNAPSHOT_DIR / f"{hostname}_{app_name}_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
 
         with open(filename, "w") as f:
             f.write(json.dumps(parsed_content, indent=4))

@@ -222,7 +222,11 @@ def main():
         try:
             with open(output_file, "rb") as f:
                 files = {"snapshot": (output_file, f, "application/json")}
-                data = {"hostname": platform.node()}
+                data = {
+                        "hostname": platform.node(),
+                        "app_path": args.app_folder
+                    }
+
 
                 print(f"Uploading to {args.upload_url} with hostname {platform.node()}...")
 
