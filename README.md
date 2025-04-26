@@ -1,7 +1,5 @@
 # EnvEye - Intelligent Snapshot Comparator
 
-![EnvEye Logo](./src/assets/logo_96x96.png)
-
 ---
 
 ## 📈 Project Overview
