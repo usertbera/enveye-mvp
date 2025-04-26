@@ -116,11 +116,6 @@ Pull requests are welcome. Open an issue first to discuss major changes!
 
 ---
 
-## 📅 License
-
-MIT License. See `LICENSE` file for details.
-
----
 
 > Made with passion for simplifying DevOps and IT life 🚀
 
