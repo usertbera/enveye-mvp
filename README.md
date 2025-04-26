@@ -1,129 +1,128 @@
-# EnvEye - Environment Snapshot & Comparison Tool 🚀
+# EnvEye - Intelligent Snapshot Comparator
 
-EnvEye is a QA/Testing innovation tool designed to **collect**, **compare**, and **explain** differences between environment setups (VMs, servers, desktops) — using AI assistance!
-
----
-
-## 📦 Components
-
-- **Collector Agent (EXE)**: Portable executable that collects critical environment information (DLLs, Services, Registry, Configs) into a JSON snapshot.
-- **FastAPI Backend**: Provides APIs to compare snapshots and explain differences via OpenAI.
-- **React Frontend**: Web dashboard to upload, compare, and visualize environment differences.
-- **AI Integration**: GPT-3.5-Turbo used to explain detected configuration differences.
+![EnvEye Logo](./src/assets/logo_96x96.png)
 
 ---
 
-## 🚀 Quick Start
+## 📈 Project Overview
 
-### 1. Clone the Repository
+**EnvEye** is a smart debugging assistant for IT environments. It compares snapshots of system states (from two Virtual Machines) and highlights key differences. Using Google Gemini AI, it analyzes configuration issues, error messages, and suggests potential root causes and fixes.
 
-```bash
-git clone https://github.com/YOUR_USERNAME/enveye-mvp.git
-cd enveye-mvp
-```
-
-### 2. Setup Backend (FastAPI)
-
-```bash
-cd enveye-backend
-pip install -r requirements.txt
-```
-
-✅ **Set your OpenAI API key** before running:
-
-```bash
-# Windows CMD
-set OPENAI_API_KEY=your-openai-api-key
-
-# PowerShell
-$env:OPENAI_API_KEY="your-openai-api-key"
-```
+Built to accelerate troubleshooting and root cause analysis for developers, IT support, and system administrators.
 
 ---
 
-### 3. Setup Frontend (React)
+## 🧬 Key Features
 
+- 💾 **Snapshot Collection**: Remote or manual snapshot capture of VM environments.
+- 🔍 **DeepDiff Comparison**: Analyze detailed differences in OS, services, DLLs, configs.
+- 💡 **AI-Powered Analysis**: Get smart, context-driven explanations and suggestions.
+- 📲 **Clean UI**: Upload, compare, view differences and download snapshots.
+- ✉️ **Optional Error Message Input**: Helps AI provide even more precise debugging help.
+
+---
+
+## 🚀 Tech Stack
+
+- **Frontend**: React + Vite + TailwindCSS
+- **Backend**: FastAPI (Python)
+- **AI Model**: Google Gemini 1.5 Pro
+- **Snapshot Collector**: Python Agent using WinRM (Windows Remote Management)
+- **Diff Engine**: DeepDiff (Python)
+
+---
+
+## 🔍 How It Works
+
+1. **Capture Snapshots**: Collect environment context (services, registry keys, DLL versions, configs).
+2. **Upload & Compare**: Upload two snapshots through UI and generate DeepDiff report.
+3. **Analyze Differences**: Displayed in a beautiful sortable table.
+4. **Request AI Assistance**: Submit differences and optional error messages to Gemini.
+5. **Get Solutions**: Receive potential causes and fixes in seconds.
+
+---
+
+## 🌐 Local Setup Instructions
+
+### Frontend
 ```bash
 cd enveye-frontend
 npm install
 npm run build
+npm run preview
 ```
 
-✅ This generates optimized production files inside `/dist/`.
-
----
-
-### 4. Start Backend Server (Serving Frontend + APIs)
-
+### Backend
 ```bash
 cd enveye-backend
-uvicorn enveye_backend:app --reload
+pip install -r requirements.txt
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-✅ Open [http://localhost:8000](http://localhost:8000) in browser!\
-✅ Upload snapshots → Compare → Get AI explanations! 🚀
+> Make sure you set your `GOOGLE_API_KEY` as an environment variable for backend.
 
----
-
-## 🛠️ Building Collector Agent EXE
-
-To rebuild the portable EXE if needed:
-
+### Collector Agent (optional)
 ```bash
-pip install pyinstaller
-pyinstaller --onefile --clean collector_agent.py
-```
-
-✅ Final EXE available inside `/dist/` folder.
-
-✅ This EXE can be copied to any VM without requiring Python!
-
----
-
-## 📄 Environment Variables
-
-| Variable         | Purpose                               |
-| ---------------- | ------------------------------------- |
-| `GOOGLE_API_KEY` | API key for Gemini integration |
-
-**You can also create a ****\`\`**** file:**
-
-```plaintext
-GOOGLE_API_KEY=your-openai-api-key-here
+cd collector
+python collector_agent.py --app-folder "C:\\Program Files\\YourApp" --app-type desktop --upload-url http://<backend-ip>:8000/upload_snapshot
 ```
 
 ---
 
-## 📂 Project Folder Structure
+## 🎓 Project Structure
 
-```plaintext
-VMCompare/
-├── enveye-frontend/    # React Frontend App
-│    ├── dist/          # Production build output
-├── enveye-backend/     # FastAPI Backend API
-│    └── enveye_backend.py
-├── collector_agent.py  # Collector Agent Script
-└── README.md           # This file
+```
+/enveye-frontend     # React Frontend
+/enveye-backend      # FastAPI Backend
+/collector           # Snapshot collection agent
 ```
 
 ---
 
-## 📢 Key Features
+## 🏆 Hackathon Requirements
 
-- Portable Agent EXE (no Python needed at VM side)
-- DeepDiff JSON comparison
-- AI-generated intelligent explanations
-- Unified backend serving both frontend and APIs
-- Easy deployment and scaling possibilities
-
----
-
-## 📜 License
-
-This project is currently for internal use and testing automation purposes.\
-(You can add a real license later if planning open-source!)
+- **AI Usage**: Gemini used for intelligent diff explanation & suggestion.
+- **Innovation**: Assists in root cause analysis using context + user errors.
+- **Impact**: Saves hours for IT debugging teams.
+- **Responsible AI**: Disclaimer added about AI output accuracy.
 
 ---
 
-# 🌟 Happy Testing with EnvEye! 🚀
+## ⚡ Limitations
+
+- Currently tuned for Windows VMs.
+- Large snapshots (>10MB) may slow comparison.
+- AI suggestions are best-effort, manual validation needed.
+
+---
+
+## 🌈 Future Improvements
+
+- Linux & Mac snapshot collection.
+- Intelligent auto-prioritization of critical config changes.
+- Caching and faster multi-comparison support.
+
+---
+
+## 🌍 Contributing
+
+Pull requests are welcome. Open an issue first to discuss major changes!
+
+---
+
+## 🙏 Acknowledgements
+
+- Google Gemini API
+- Microsoft Hackathon guidelines
+- DeepDiff (for powerful JSON diffing)
+
+---
+
+## 📅 License
+
+MIT License. See `LICENSE` file for details.
+
+---
+
+> Made with passion for simplifying DevOps and IT life 🚀
 
