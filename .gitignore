@@ -1,14 +1,4 @@
-enveye-backend/__pycache__/enveye_backend.cpython-312.pyc
-collector_agent.py
-enveye-backend/__pycache__/enveye_backend.cpython-313.pyc
-enveye-backend/snapshots/RDV-010152_20250421132233.json
-enveye-backend/snapshots/Unity Client_20250421234854.json
-enveye-backend/uvicorn
-enveye-backend/snapshots/RDV-007801_20250422051320.json
-enveye-backend/snapshots/RDV-007801_20250423111647.json
-enveye-backend/snapshots/RDV-007801_20250423113011.json
-enveye-backend/snapshots/RDV-007801_UnityClient_20250425004302.json
 enveye-backend/snapshots/RDV-007801_Edge_20250426094100.json
 enveye-backend/snapshots/RDV-010152_Edge_20250426094422.json
-start_all.bat
-start_frontend.bat
+enveye-backend/__pycache__/enveye_backend.cpython-313.pyc
+enveye-backend/uvicorn
