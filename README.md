@@ -1,47 +1,17 @@
-**LICENSE (MIT)**
-
-```markdown
-MIT License
-
-Copyright (c) 2025 Tapabrata
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
-# README.md
-
-```markdown
 <p align="center">
-  <img src="./assets/logo_96x96.png" alt="EnvEye Logo" width="120" height="120"/>
+  <img src="https://github.com/usertbera/enveye-mvp/raw/main/enveye-frontend/src/assets/logo_96x96.png" alt="EnvEye Logo" width="120" height="120"/>
 </p>
 
 <h1 align="center">EnvEye - Intelligent Snapshot Comparator</h1>
 
 <p align="center">
-  💻 Compare. 🧐 Analyze. 🚀 Fix. <br/>
+  💻 Compare. 🤮 Analyze. 🚀 Fix. <br/>
   <em>Debugging environments smarter & faster.</em>
 </p>
 
 <p align="center">
-  <img alt="Built With" src="https://img.shields.io/badge/Built%20with-React%20%7C%20FastAPI%20%7C%20Gemini-blue?style=for-the-badge"/>
-  <img alt="License" src="https://img.shields.io/github/license/yourusername/enveye?style=for-the-badge"/>
+  <a href="https://github.com/usertbera/enveye-mvp"><img alt="Built With" src="https://img.shields.io/badge/Built%20with-React%20%7C%20FastAPI%20%7C%20Gemini-blue?style=for-the-badge"/></a>
+  <a href="https://github.com/usertbera/enveye-mvp/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/usertbera/enveye-mvp?style=for-the-badge"/></a>
   <img alt="Made with Python" src="https://img.shields.io/badge/Made%20with-Python%20%7C%20React-informational?style=for-the-badge"/>
 </p>
 
@@ -83,15 +53,15 @@ Built for developers, DevOps, and IT support teams — to accelerate troubleshoo
 
 1. 📥 **Collect Snapshots**: Capture environment context (services, registry, DLLs, configs).
 2. 🔍 **Upload & Compare**: Upload two snapshots to generate a DeepDiff report.
-3. 🧐 **Analyze Differences**: Visualize differences in a clean table.
-4. 🧯 **Request AI Help**: Send differences + optional error message to Gemini.
+3. 🤮 **Analyze Differences**: Visualize differences in a clean table.
+4. 🛧️ **Request AI Help**: Send differences + optional error message to Gemini.
 5. 🛠️ **Get Solutions**: Receive possible causes and intelligent suggestions.
 
 ---
 
 ## 🌐 Local Setup Instructions
 
-### Frontend Setup
+### 👉 Frontend Setup
 ```bash
 cd enveye-frontend
 npm install
@@ -99,19 +69,30 @@ npm run build
 npm run preview
 ```
 
-### Backend Setup
+**📍 Important:**
+Update the backend IP address in `enveye-frontend/src/api.js`:
+```javascript
+export const API_BASE_URL = "http://<your-backend-ip>:8000";
+```
+
+---
+
+### 👉 Backend Setup
 ```bash
 cd enveye-backend
 pip install -r requirements.txt
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
-✅ **Important:**  
-Set your `GOOGLE_API_KEY` as an environment variable before starting the backend!
+
+**Environment Variable Required:**
+```bash
+export GOOGLE_API_KEY=your-api-key-here  # Linux/Mac
+set GOOGLE_API_KEY=your-api-key-here     # Windows
+```
 
 ---
 
-## ⚙️ Collector Agent Setup (Optional but Recommended)
-
+### 👉 Collector Agent Setup (Optional)
 ```bash
 cd collector
 python collector_agent.py --app-folder "C:\\Program Files\\YourApp" --app-type desktop --upload-url http://<backend-ip>:8000/upload_snapshot
@@ -119,7 +100,7 @@ python collector_agent.py --app-folder "C:\\Program Files\\YourApp" --app-type d
 
 ---
 
-## 🛠 Important Setup for Remote Collection (First Time)
+## ⚙️ Important Setup for Remote Collection (First Time)
 
 To enable remote snapshot collection (WinRM setup):
 
@@ -138,8 +119,6 @@ winrm enumerate winrm/config/listener
 Write-Host "\n✅ WinRM Setup Completed Successfully!" -ForegroundColor Green
 ```
 
-✅ After this, remote collection will work seamlessly!
-
 ---
 
 ## 📂 Project Structure
@@ -156,31 +135,21 @@ Write-Host "\n✅ WinRM Setup Completed Successfully!" -ForegroundColor Green
 
 - Currently supports only **Windows VMs**.
 - Large snapshots (>10MB) may slightly slow comparisons.
-- AI diagnosis is best-effort — final judgment advised.
+- AI diagnosis is best-effort — manual validation recommended.
 
 ---
 
 ## 🌈 Future Enhancements
 
-- 🐧 Linux and Mac snapshot support.
+- 🐦 Linux and Mac snapshot support.
 - 🚀 Prioritized intelligent diff reporting.
 - 🔥 Faster batch comparisons.
 
 ---
 
-## 📢 Important Configuration
+## 📅 License
 
-🔹 **If needed**, update backend IP inside frontend:  
-`enveye-frontend/src/api.js`
-```javascript
-export const API_BASE_URL = "http://<your-backend-ip>:8000";
-```
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) file.
+This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for more details.
 
 ---
 
@@ -188,15 +157,10 @@ This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) fil
 
 - 🧠 Google Gemini AI
 - ⚡ DeepDiff for intelligent diffing
-- 📚 Microsoft Hackathon guidelines
+- 📚 Microsoft Hackathon guidance
 - ❤️ Open-source community inspirations
 
 ---
 
 > Made with passion to simplify IT and DevOps life! 🚀
-```
-
----
-
-Would you also like me to now create a short `CONTRIBUTING.md` to make it **100% hackathon ready**? 🚀
 
