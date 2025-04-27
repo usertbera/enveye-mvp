@@ -77,15 +77,6 @@ python collector_agent.py --app-folder "C:\\Program Files\\YourApp" --app-type d
 
 ---
 
-## 🏆 Hackathon Requirements
-
-- **AI Usage**: Gemini used for intelligent diff explanation & suggestion.
-- **Innovation**: Assists in root cause analysis using context + user errors.
-- **Impact**: Saves hours for IT debugging teams.
-- **Responsible AI**: Disclaimer added about AI output accuracy.
-
----
-
 ## ⚡ Limitations
 
 - Currently tuned for Windows VMs.
