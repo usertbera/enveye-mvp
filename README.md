@@ -25,6 +25,14 @@ Powered by **Google Gemini AI**, it explains issues and suggests fixes instantly
 
 Built for developers, DevOps, and IT support teams — to accelerate troubleshooting and root cause analysis.
 
+<p align="center">
+  <a href="https://youtu.be/dB4ALbFPf3Y" target="_blank">
+    <img src="https://img.youtube.com/vi/dB4ALbFPf3Y/0.jpg" alt="EnvEye Demo Video" width="600" style="border-radius: 8px;"/>
+    <br>
+    <strong>▶️ Watch Demo Video</strong>
+  </a>
+</p>
+
 ---
 
 ## 🧆 Key Features
