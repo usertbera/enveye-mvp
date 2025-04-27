@@ -1,22 +1,26 @@
-import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'; // 🛠️ Added Router
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import UploadForm from './components/UploadForm';
 import DiffViewer from './components/DiffViewer';
 import RemoteCollector from './components/RemoteCollector';
-import SnapshotViewer from './components/SnapshotViewer'; // 🆕 Import SnapshotViewer
-import { useEffect } from 'react';
+import SnapshotViewer from './components/SnapshotViewer';
+import logo from './assets/logo_96x96.png'; // ✅ Correct image import
 
 function App() {
   const [diffData, setDiffData] = useState(null);
-  
+
   useEffect(() => {
-    document.title = "EnvEye"; // Force set title
+    document.title = "EnvEye";
   }, []);
 
   return (
     <Router>
       <div className="min-h-screen bg-gray-100 p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center">🚀 EnvEye Dashboard</h1>
+        {/* ✅ Updated header with actual imported image */}
+        <div className="flex justify-center items-center mb-6 space-x-3">
+          <img src={logo} alt="EnvEye Logo" className="w-12 h-12 object-contain align-middle mt-[2px]" />
+          <h1 className="text-3xl font-bold">EnvEye Dashboard</h1>
+        </div>
 
         {/* Navigation Menu */}
         <div className="flex justify-center space-x-6 mb-8">
