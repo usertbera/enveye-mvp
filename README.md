@@ -50,6 +50,15 @@ npm run build
 npm run preview
 ```
 
+**📍 Important:**  
+In `enveye-frontend/src/api.js`, update the backend IP if needed:
+```javascript
+export const API_BASE_URL = "http://<backend-ip>:8000";
+```
+Replace `<backend-ip>` with your backend server's IP address (or `localhost` if running locally).
+
+---
+
 ### Backend
 ```bash
 cd enveye-backend
@@ -57,13 +66,51 @@ pip install -r requirements.txt
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-> Make sure you set your `GOOGLE_API_KEY` as an environment variable for backend.
+👉 Make sure you set your `GOOGLE_API_KEY` as an environment variable for backend access to Gemini API.
 
-### Collector Agent (optional)
+---
+
+### Collector Agent (Optional)
 ```bash
 cd collector
 python collector_agent.py --app-folder "C:\\Program Files\\YourApp" --app-type desktop --upload-url http://<backend-ip>:8000/upload_snapshot
 ```
+
+---
+
+### ⚙️ Important Setup (For Remote Collection)
+
+When performing **remote snapshot collection** for the **first time** on any new VM:
+
+1. **Run the `WinRMFixScript.ps1` script** on the target VM to enable remote PowerShell (WinRM):
+
+```powershell
+# WinRM Fixer Script
+Write-Host "🔧 Configuring WinRM..." -ForegroundColor Cyan
+
+winrm quickconfig -q
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+winrm set winrm/config/service/auth '@{Basic="true"}'
+New-NetFirewallRule -DisplayName "Allow WinRM (HTTP 5985)" -Name "AllowWinRM" -Protocol TCP -LocalPort 5985 -Action Allow
+
+Write-Host "`n🔎 Current Listeners:" -ForegroundColor Green
+winrm enumerate winrm/config/listener
+
+Write-Host "`n✅ WinRM Setup Completed Successfully!" -ForegroundColor Green
+```
+
+2. **Prepare and Copy the Collector Agent Executable**:
+
+- Use PyInstaller to create a `.exe` from `collector_agent.py`:
+  ```bash
+  pyinstaller --onefile collector_agent.py
+  ```
+- Copy the generated `collector_agent.exe` to the target VM at:
+  ```
+  C:\Tools\Collector\collector_agent.exe
+  ```
+
+After this setup, EnvEye can remotely collect snapshots from VMs!
 
 ---
 
@@ -79,23 +126,25 @@ python collector_agent.py --app-folder "C:\\Program Files\\YourApp" --app-type d
 
 ## ⚡ Limitations
 
-- Currently tuned for Windows VMs.
-- Large snapshots (>10MB) may slow comparison.
-- AI suggestions are best-effort, manual validation needed.
+- Currently tuned for Windows VMs only.
+- Large snapshots (>10MB) might slow comparison and explanation.
+- AI suggestions are best-effort; manual validation is recommended.
 
 ---
 
 ## 🌈 Future Improvements
 
-- Linux & Mac snapshot collection.
-- Intelligent auto-prioritization of critical config changes.
-- Caching and faster multi-comparison support.
+- Linux and Mac snapshot support.
+- Intelligent auto-prioritization of critical configuration differences.
+- Caching, performance tuning for huge snapshots.
+- More detailed AI debugging flows (e.g., step-by-step guided analysis).
 
 ---
 
 ## 🌍 Contributing
 
-Pull requests are welcome. Open an issue first to discuss major changes!
+Pull requests are welcome! Open an issue first to discuss what you want to change.  
+Let's build EnvEye stronger together!
 
 ---
 
@@ -107,6 +156,5 @@ Pull requests are welcome. Open an issue first to discuss major changes!
 
 ---
 
-
-> Made with passion for simplifying DevOps and IT life 🚀
+> Made with ❤️ for simplifying DevOps, IT management, and debugging 🚀
 
