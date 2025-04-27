@@ -104,7 +104,7 @@ python collector_agent.py --app-folder "C:\\Program Files\\YourApp" --app-type d
 
 To enable remote snapshot collection (WinRM setup):
 
-1. Copy `collector_agent.exe` to your target VM. (Use PyInstaller to generate `collector_agent.exe`)
+1. Copy `collector_agent.exe` to your target VM in "C:\Tools\Collector" . (Use PyInstaller to generate `collector_agent.exe`)
 2. On the target VM, **run the following PowerShell script once**:
 
 ```powershell
