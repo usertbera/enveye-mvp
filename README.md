@@ -1,4 +1,5 @@
 # EnvEye - Intelligent Snapshot Comparator
+![logo_96x96](https://github.com/user-attachments/assets/d894b153-d3d3-43ff-8703-98772fd544fc)
 
 ---
 
