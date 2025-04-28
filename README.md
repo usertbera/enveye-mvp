@@ -5,7 +5,7 @@
 <h1 align="center">EnvEye - Intelligent Snapshot Comparator</h1>
 
 <p align="center">
-  💻 Compare. 🤮 Analyze. 🚀 Fix. <br/>
+  💻 Compare. 🤔 Analyze. 🚀 Fix. <br/>
   <em>Debugging environments smarter & faster.</em>
 </p>
 
