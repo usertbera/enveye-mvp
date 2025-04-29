@@ -28,7 +28,7 @@ Built for developers, DevOps, and IT support teams — to accelerate troubleshoo
 
 <p align="center">
   <a href="https://youtu.be/T6lgu8V8IjM" target="_blank">
-    <img src="https://img.youtube.com/vi/T6lgu8V8IjM/0.jpg" alt="EnvEye Demo Video" width="600" style="border-radius: 8px;"/>
+    <img src="https://img.youtube.com/vi/T6lgu8V8IjM/1.jpg" alt="EnvEye Demo Video" width="600" style="border-radius: 8px;"/>
     <br>
     <strong>▶️ Watch Demo Video</strong>
   </a>
