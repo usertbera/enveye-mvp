@@ -13,6 +13,12 @@ from pathlib import Path
 from datetime import datetime
 import base64
 from fastapi import Body
+from PIL import Image
+import pytesseract
+import base64
+import io
+import re
+import unicodedata
 
 
 # --- FastAPI Application ---
@@ -102,21 +108,38 @@ async def explain_diff(payload: dict = Body(...)):
     try:
         diff = payload.get("diff", {})
         error_message = payload.get("error_message", "").strip()
-
+        error_screenshot = payload.get("error_screenshot", None)
+        log_path = payload.get("log_path", "").strip()
+        #Extract log path
+        log_content = ""
+        if log_path:
+            full_log = read_log_file(log_path)
+            log_content = extract_important_log_lines(full_log)
+        # Extract text from image if present
+        screenshot_text = ""
+        if error_screenshot:
+            screenshot_text = extract_text_from_screenshot(error_screenshot)
         prompt = f"""
 You are a helpful assistant specialized in IT system configuration comparisons.
 Given the following DeepDiff output between two VMs, do the following:
 
 1. Give a summary of what has changed
-2. If an error message is provided, analyze it in context of the diff
-3. Suggest possible root causes or solutions
-4. Be concise and highlight important issues
+2. If an error message is provided or found in a screenshot, analyze it in context of the diff.
+3. Incorporate log file clues if available.
+4. Suggest possible root causes or solutions
+5. Be concise and highlight important issues
 
 Diff data:
 {json.dumps(diff, indent=2)}
 
 Error message (if any):
 {error_message or 'None'}
+
+Error message (from screenshot):
+{screenshot_text or 'None'}
+
+Log Content (if any):
+{log_content or 'None'}
 """
         model = genai.GenerativeModel('gemini-2.5-pro-exp-03-25')
         response = model.generate_content(prompt)
@@ -230,4 +253,44 @@ async def download_snapshot(filename: str):
         return FileResponse(file_path, filename=filename, media_type='application/json')
     else:
         return JSONResponse(content={"error": "File not found."}, status_code=404)
+        
+# --- Utilities ---
+def extract_important_log_lines(log_text, keywords=None, max_lines=100):
+    keywords = keywords or ['ERROR', 'Exception', 'Traceback', 'CRITICAL', 'Failed', 'Caused by']
+    lines = log_text.splitlines()
+    filtered = [line for line in lines if any(k in line for k in keywords)]
+    return "\n".join(filtered[-max_lines:])  # last N relevant lines
+
+def read_log_file(path):
+    try:
+        if os.path.exists(path) and path.endswith('.log'):
+            with open(path, 'r', encoding='utf-8') as f:
+                return f.read()
+    except Exception as e:
+        print("⚠️ Failed to read log:", e)
+    return ""
+
+
+def extract_text_from_screenshot(base64_image):
+    try:
+        image_data = base64.b64decode(base64_image.split(",")[-1])
+        image = Image.open(io.BytesIO(image_data))
+        raw_text = pytesseract.image_to_string(image)
+        cleaned_text = clean_ocr_text(raw_text)
+        return cleaned_text
+    except Exception as e:
+        print("Error extracting text from screenshot:", e)
+        return ""
+        
+def clean_ocr_text(text):
+    # Normalize Unicode (e.g., accented characters)
+    text = unicodedata.normalize("NFKD", text)
+
+    # Remove non-printable characters (keep ASCII)
+    text = re.sub(r'[^\x20-\x7E]+', '', text)
+
+    # Collapse multiple spaces, remove leading/trailing whitespace
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    return text
 

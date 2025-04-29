@@ -6,6 +6,9 @@ function DiffViewer({ diffData }) {
   const [explanation, setExplanation] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(""); // ✅ error message input
+  const [errorScreenshot, setScreenshot] = useState(null);
+  const [logPath, setLogPath] = useState("");
+
 
   if (!diffData || Object.keys(diffData).length === 0) {
     return <div className="mt-8 text-center text-gray-500">No differences found!</div>;
@@ -27,7 +30,9 @@ function DiffViewer({ diffData }) {
 
       const payload = {
         diff: diffData,
-        error_message: errorMsg || ""
+        error_message: errorMsg || "",
+		error_screenshot: errorScreenshot || null,
+		log_path: logPath || ""
       };
 
       const response = await axios.post(`${API_BASE_URL}/explain`, payload);
@@ -39,6 +44,20 @@ function DiffViewer({ diffData }) {
       setLoading(false);
     }
   };
+  
+  const handleFileChange = (e) => {
+	  const file = e.target.files[0];
+	  if (file && file.type.startsWith("image/")) {
+		const reader = new FileReader();
+		reader.onloadend = () => {
+		  setScreenshot(reader.result); // Base64 string
+		};
+		reader.readAsDataURL(file);
+	  } else {
+		alert("Please upload a valid image file.");
+	  }
+	};
+
 
   const renderChangeRow = (type, path, oldValue, newValue) => {
     let bgColor = "bg-green-100";
@@ -108,12 +127,37 @@ function DiffViewer({ diffData }) {
 
         {/* Right Panel - Explain Section */}
         <div className="flex-1 bg-white rounded-lg shadow-lg p-4 flex flex-col">
-          <textarea
-            placeholder="Optional: Paste a relevant error message here..."
-            className="w-full px-4 py-2 border rounded mb-4"
-            value={errorMsg}
-            onChange={(e) => setErrorMsg(e.target.value)}
-          />
+          <div className="relative mb-4">
+			  <textarea
+				placeholder="Optional: Paste a relevant error message here..."
+				className="w-full px-4 py-2 border rounded"
+				value={errorMsg}
+				onChange={(e) => setErrorMsg(e.target.value)}
+			  />
+			  <label
+				htmlFor="screenshot-upload"
+				className="absolute top-2 right-2 bg-purple-600 text-white px-2 py-1 rounded cursor-pointer text-lg"
+				title="Upload Screenshot"
+			  >
+				+
+			  </label>
+			  <input
+				id="screenshot-upload"
+				type="file"
+				accept="image/*"
+				className="hidden"
+				onChange={handleFileChange}
+			  />
+			</div>
+			
+			{/* Log Path Input */}
+		  <input
+			type="text"
+			placeholder="Optional: Enter log file path (e.g., /var/log/myapp/error.log)"
+			className="w-full px-4 py-2 border rounded mb-4 text-sm"
+			value={logPath}
+			onChange={(e) => setLogPath(e.target.value)}
+		  />
 
           <div className="flex justify-center mb-4">
             <button
