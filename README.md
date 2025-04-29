@@ -35,6 +35,14 @@ Built for developers, DevOps, and IT support teams — to accelerate troubleshoo
 </p>
 
 ---
+
+## 📸 Screenshots
+
+![image](https://github.com/user-attachments/assets/eef63ec5-aa2c-41a0-8665-15e77cf7264a)
+![image](https://github.com/user-attachments/assets/c6b2a7cf-9d54-4c9b-b900-de3bc46dd945)
+![image](https://github.com/user-attachments/assets/39905967-9c60-4c65-a49a-c7e895c78a04)
+
+---
 ## 🛠️ EnvEye Architecture Diagram
 
 <p align="center">
