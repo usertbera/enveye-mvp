@@ -22,7 +22,7 @@
 
 **EnvEye** is a smart debugging assistant for IT environments.  
 It compares snapshots of system states (e.g., two VMs) and highlights key differences.  
-Powered by **Google Gemini AI**, it explains issues and suggests fixes instantly.
+Powered by **OpenAI**, it explains issues and suggests fixes instantly.
 
 Built for developers, DevOps, and IT support teams — to accelerate troubleshooting and root cause analysis.
 
@@ -46,7 +46,7 @@ Built for developers, DevOps, and IT support teams — to accelerate troubleshoo
 ## 🛠️ EnvEye Architecture Diagram
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c8e44eef-55f9-40d4-b292-61944c06f509" alt="EnvEye Architecture Diagram" width="600"/>
+  <img src="https://github.com/user-attachments/assets/6386b028-fc17-45d5-8e9c-ac0748c1a6db" alt="EnvEye Architecture Diagram" width="600"/>
 </p>
 
 ----
@@ -69,7 +69,7 @@ Built for developers, DevOps, and IT support teams — to accelerate troubleshoo
 | ----------- | ------------------------------------- |
 | Frontend    | React + Vite + TailwindCSS            |
 | Backend     | FastAPI (Python)                      |
-| AI Model    | Google Gemini 1.5 Pro                 |
+| AI Model    | OpenAI GPT                 |
 | OCR Engine  | Tesseract OCR (via pytesseract)       |
 | Collector   | Python Agent using WinRM              |
 | Diff Engine | DeepDiff (Python)                     |
@@ -116,8 +116,8 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 **Environment Variable Required:**
 ```bash
-export GOOGLE_API_KEY=your-api-key-here  # Linux/Mac
-set GOOGLE_API_KEY=your-api-key-here     # Windows
+export OPENAI_API_KEY=your-api-key-here  # Linux/Mac
+set OPENAI_API_KEY=your-api-key-here     # Windows
 ```
 
 **Optional: Install OCR Dependencies**
@@ -196,7 +196,7 @@ This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for
 
 ## 🙏 Acknowledgements
 
-- 🧠 Google Gemini AI
+- 🧠 OpenAI 
 - ⚡ DeepDiff for intelligent diffing
 - 🧾 Tesseract OCR
 - ❤️ Open-source community inspirations
