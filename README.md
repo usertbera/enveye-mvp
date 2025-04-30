@@ -199,7 +199,6 @@ This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for
 - 🧠 Google Gemini AI
 - ⚡ DeepDiff for intelligent diffing
 - 🧾 Tesseract OCR
-- 📚 Microsoft Hackathon guidance
 - ❤️ Open-source community inspirations
 
 ---
