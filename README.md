@@ -27,8 +27,8 @@ Powered by **OpenAI**, it explains issues and suggests fixes instantly.
 Built for developers, DevOps, and IT support teams — to accelerate troubleshooting and root cause analysis.
 
 <p align="center">
-  <a href="https://youtu.be/T6lgu8V8IjM" target="_blank">
-    <img src="https://img.youtube.com/vi/T6lgu8V8IjM/1.jpg" alt="EnvEye Demo Video" width="600" style="border-radius: 8px;"/>
+  <a href="https://youtu.be/kbgjsI6xAjk" target="_blank">
+    <img src="https://github.com/user-attachments/assets/eef63ec5-aa2c-41a0-8665-15e77cf7264a" alt="EnvEye Demo Video" width="600" style="border-radius: 8px;"/>
     <br>
     <strong>▶️ Watch Demo Video</strong>
   </a>
