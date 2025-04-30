@@ -19,6 +19,8 @@ import base64
 import io
 import re
 import unicodedata
+from openai import OpenAI
+
 
 
 # --- FastAPI Application ---
@@ -34,7 +36,8 @@ app.add_middleware(
 )
 
 # --- Configure Gemini API ---
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+#genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # --- Serve Frontend Static Files ---
 app.mount("/static", StaticFiles(directory="../enveye-frontend/dist"), name="static")
@@ -110,15 +113,19 @@ async def explain_diff(payload: dict = Body(...)):
         error_message = payload.get("error_message", "").strip()
         error_screenshot = payload.get("error_screenshot", None)
         log_path = payload.get("log_path", "").strip()
-        #Extract log path
+
+        # Extract log content
         log_content = ""
         if log_path:
             full_log = read_log_file(log_path)
             log_content = extract_important_log_lines(full_log)
+
         # Extract text from image if present
         screenshot_text = ""
         if error_screenshot:
             screenshot_text = extract_text_from_screenshot(error_screenshot)
+
+        # Construct the prompt
         prompt = f"""
 You are a helpful assistant specialized in IT system configuration comparisons.
 Given the following DeepDiff output between two VMs, do the following:
@@ -141,10 +148,24 @@ Error message (from screenshot):
 Log Content (if any):
 {log_content or 'None'}
 """
-        model = genai.GenerativeModel('gemini-2.5-pro-exp-03-25')
-        response = model.generate_content(prompt)
 
-        return {"explanation": response.text}
+        # Use OpenAI GPT-4. If "gpt-4.1" is not supported, fallback to "gpt-4"
+        response = client.chat.completions.create(
+            model="gpt-4",  # Adjust this if "gpt-4.1" is confirmed supported
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            stream=True
+        )
+
+        # Aggregate streamed content
+        full_response = ""
+        for chunk in response:
+            if chunk.choices[0].delta.content:
+                full_response += chunk.choices[0].delta.content
+
+        return {"explanation": full_response}
 
     except Exception as e:
         print("❌ Error during AI explanation:", e)
