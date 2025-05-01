@@ -84,7 +84,7 @@ Built for developers, DevOps, and IT support teams — to accelerate troubleshoo
    - Paste an error message
    - Upload a screenshot (auto OCR)
    - Or provide a **log file path** accessible to the backend
-4. 🧠 **Request AI Help**: All inputs are sent to Gemini for analysis.
+4. 🧠 **Request AI Help**: All inputs are sent to GPT for analysis.
 5. 🛠️ **Get Solutions**: Receive probable causes and intelligent suggestions.
 
 ---
