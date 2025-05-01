@@ -55,7 +55,7 @@ Built for developers, DevOps, and IT support teams — to accelerate troubleshoo
 
 - 💾 **Snapshot Collection**: Remote/manual VM snapshot capture.
 - 🔍 **DeepDiff Comparison**: Detects changes across OS, DLLs, services, configs.
-- 🧠 **AI-Powered Analysis**: Smart diagnosis using Gemini.
+- 🧠 **AI-Powered Analysis**: Smart diagnosis using GPT.
 - 🖼️ **Screenshot Debugging**: Upload an error screenshot – OCR extracts the message!
 - 📁 **Log Path Support**: Mention a backend-accessible log file path for full AI context.
 - 📋 **Clean & Friendly UI**: View, upload, download snapshots effortlessly.
