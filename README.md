@@ -50,7 +50,22 @@ Built for developers, DevOps, and IT support teams — to accelerate troubleshoo
 </p>
 
 ----
+## 🏆 Why EnvEye Matters
 
+**EnvEye empowers IT support teams and developers to dramatically reduce Mean Time To Resolution (MTTR)** by automating the discovery of environment-related issues. Instead of manually inspecting configurations, services, DLLs, or logs, teams can rely on EnvEye’s intelligent comparison and AI-powered diagnostics.
+
+### 💡 Real-World Use Case
+
+> A support engineer receives a critical bug report from staging: “It worked yesterday.”  
+> Using EnvEye, they instantly compare snapshots from today and yesterday, OCR a provided error screenshot, and get GPT-generated insights into the root cause — saving hours of guesswork and back-and-forth debugging.
+
+### ✅ Aligned with Microsoft AI Ecosystem
+
+- Built with **Azure-compatible architecture** — can be easily adapted to use Azure OpenAI endpoints.
+- Designed as a modular **agent**, consistent with Microsoft's vision for autonomous, intelligent assistants.
+- Deployable in **Azure Functions**, container apps, or internal IT pipelines for scalable enterprise use.
+
+---
 ## 🧆 Key Features
 
 - 💾 **Snapshot Collection**: Remote/manual VM snapshot capture.
