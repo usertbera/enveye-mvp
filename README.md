@@ -202,7 +202,24 @@ Write-Host "
 - 🪵 Smart log scanning (pattern detection, timestamps, etc.)
 
 ---
+## 🌩️ Cloud-Native Vision (Roadmap)
 
+As infrastructure continues to evolve toward the cloud, EnvEye is designed to evolve with it. Snapshot-based debugging remains a **critical tool** in modern, distributed systems — and we’re building toward native cloud support.
+
+### 🔭 Planned Cloud Integrations:
+
+| Goal                             | Description |
+|----------------------------------|-------------|
+| ☁️ **Cloud VM Support**         | Support for snapshot collection from **AWS EC2**, **Azure VMs**, and **GCP Compute Engine** — using native APIs (SSM, Azure RunCommand, etc.) |
+| 🐧 **Linux-Based Snapshot Agents** | Extend the agent to support **Linux VMs** via SSH and shell collectors |
+| 📦 **Docker & Kubernetes Snapshots** | Capture and compare environment state inside **containers** and **K8s pods** — such as env vars, mounts, and sidecar configs |
+| ⚙️ **Cloud Log Integration**     | Fetch relevant logs directly from **CloudWatch**, **Azure Monitor**, or **GCP Logging** when a path or tag is provided |
+| 🔁 **GitOps & CI/CD Awareness** | Compare snapshots against known-good state from a GitOps repo or before/after deployment scripts |
+| 🧠 **AI Root Cause for Cloud Drift** | Use AI to explain mismatches in multi-region, auto-scaled deployments or ephemeral node pools |
+
+> ✨ Whether it's a Windows VM, a Linux container, or a dynamic microservice — EnvEye will help you debug it faster.
+
+---
 ## 📅 License
 
 This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for more details.
