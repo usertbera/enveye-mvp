@@ -1,7 +1,12 @@
 fastapi
 uvicorn
-python-multipart
-google-generativeai
+pillow
+pytesseract
+tiktoken
+openai
 deepdiff
-pywinrm
+google-generativeai
 requests
+python-multipart
+python-dateutil
+pywinrm

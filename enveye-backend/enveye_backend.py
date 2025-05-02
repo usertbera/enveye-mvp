@@ -20,6 +20,7 @@ import io
 import re
 import unicodedata
 from openai import OpenAI
+from tiktoken import get_encoding
 
 
 
@@ -118,7 +119,10 @@ async def explain_diff(payload: dict = Body(...)):
         log_content = ""
         if log_path:
             full_log = read_log_file(log_path)
-            log_content = extract_important_log_lines(full_log)
+            log_content = extract_important_log_blocks(full_log, max_blocks=30)
+            
+            if estimate_token_count(log_content) > 10000:
+                log_content = log_content[:2000] + "\n\n[Log truncated due to size]"
 
         # Extract text from image if present
         screenshot_text = ""
@@ -318,7 +322,9 @@ def extract_important_log_blocks(log_text, keywords=None, max_blocks=30):
 
     return "\n\n---\n\n".join(blocks[-max_blocks:])
 
-
+def estimate_token_count(text):
+    enc = get_encoding("cl100k_base")
+    return len(enc.encode(text))
 
 def read_log_file(path):
     try:
