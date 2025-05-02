@@ -118,7 +118,7 @@ async def explain_diff(payload: dict = Body(...)):
         # Extract log content
         log_content = ""
         if log_path:
-            full_log = read_log_file(log_path)
+            full_log = read_log_file_safely(log_path)
             log_content = extract_important_log_blocks(full_log, max_blocks=30)
             
             if estimate_token_count(log_content) > 10000:
@@ -280,6 +280,26 @@ async def download_snapshot(filename: str):
         return JSONResponse(content={"error": "File not found."}, status_code=404)
         
 # --- Utilities ---
+def read_log_file_safely(path, max_lines=200000):
+    """
+    Safely reads the last `max_lines` from a log file to avoid memory overload.
+    
+    Args:
+        path (str): Path to the log file.
+        max_lines (int): Number of lines to read from the end (default 200k).
+
+    Returns:
+        str: A string of the last N lines of the log.
+    """
+    try:
+        with open(path, "r", encoding="utf-8", errors="ignore") as f:
+            lines = f.readlines()
+            return ''.join(lines[-max_lines:])
+    except Exception as e:
+        print(f"⚠️ Error reading log file at {path}: {e}")
+        return ""
+
+
 def normalize_log_block(block):
     # Remove timestamps and join for deduplication
     clean = re.sub(r'\d{4}-\d{2}-\d{2}[\sT]\d{2}:\d{2}:\d{2}(?:[,\.]\d+)?', '', block)

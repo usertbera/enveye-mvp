@@ -72,19 +72,32 @@ function DiffViewer({ diffData }) {
 
   // Render the differences as rows
   const renderChangeRow = (type, path, oldValue, newValue, index) => {
-    let bgColor = "bg-green-100";
-    if (type === "Removed" || type === "Critical") bgColor = "bg-red-100";
-    else if (type === "Changed") bgColor = "bg-yellow-100";
+	  let bgColor = "bg-green-100";
+	  if (type === "Removed" || type === "Critical") bgColor = "bg-red-100";
+	  else if (type === "Changed") bgColor = "bg-yellow-100";
 
-    return (
-      <tr key={`${type}-${path}-${index}`} className="border-b">
-        <td className={`px-4 py-2 font-semibold text-sm w-32 whitespace-nowrap ${bgColor}`}>{type}</td>
-        <td className={`px-4 py-2 text-sm max-w-xs truncate whitespace-nowrap ${bgColor}`}>{prettifyPath(path)}</td>
-        <td className={`px-4 py-2 text-sm w-40 whitespace-nowrap ${bgColor}`}>{oldValue ?? "-"}</td>
-        <td className={`px-4 py-2 text-sm w-40 whitespace-nowrap ${bgColor}`}>{newValue ?? "-"}</td>
-      </tr>
-    );
-  };
+	  const renderCell = (value) => {
+		if (value === null || value === undefined) return "-";
+		if (typeof value === "object") {
+		  return (
+			<pre className="whitespace-pre-wrap break-words text-xs max-w-xs">
+			  {JSON.stringify(value, null, 2)}
+			</pre>
+		  );
+		}
+		return value.toString();
+	  };
+
+  return (
+    <tr key={`${type}-${path}-${index}`} className="border-b">
+      <td className={`px-4 py-2 font-semibold text-sm w-32 whitespace-nowrap ${bgColor}`}>{type}</td>
+      <td className={`px-4 py-2 text-sm max-w-xs truncate whitespace-nowrap ${bgColor}`}>{prettifyPath(path)}</td>
+      <td className={`px-4 py-2 text-sm w-40 whitespace-nowrap ${bgColor}`}>{renderCell(oldValue)}</td>
+      <td className={`px-4 py-2 text-sm w-40 whitespace-nowrap ${bgColor}`}>{renderCell(newValue)}</td>
+    </tr>
+  );
+};
+
 
   const parsedRows = [];
 
