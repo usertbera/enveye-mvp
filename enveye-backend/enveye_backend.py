@@ -276,11 +276,27 @@ async def download_snapshot(filename: str):
         return JSONResponse(content={"error": "File not found."}, status_code=404)
         
 # --- Utilities ---
+def normalize_log_line(line):
+    # Remove timestamps like "2025-05-01 10:33:45,123", "10:34:56", etc.
+    line = re.sub(r'\d{4}-\d{2}-\d{2}[\sT]\d{2}:\d{2}:\d{2}(?:[,\.]\d+)?', '', line)  # ISO datetime
+    line = re.sub(r'\d{2}:\d{2}:\d{2}(?:[,\.]\d+)?', '', line)  # standalone times
+    return line.strip()
+
 def extract_important_log_lines(log_text, keywords=None, max_lines=100):
     keywords = keywords or ['ERROR', 'Exception', 'Traceback', 'CRITICAL', 'Failed', 'Caused by']
+    seen = set()
+    deduped = []
+    
     lines = log_text.splitlines()
-    filtered = [line for line in lines if any(k in line for k in keywords)]
-    return "\n".join(filtered[-max_lines:])  # last N relevant lines
+    for line in lines:
+        if any(k in line for k in keywords):
+            normalized = normalize_log_line(line)
+            if normalized not in seen:
+                seen.add(normalized)
+                deduped.append(line)
+    
+    return "\n".join(deduped[-max_lines:])
+
 
 def read_log_file(path):
     try:
