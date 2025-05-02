@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/usertbera/enveye-mvp"><img alt="Built With" src="https://img.shields.io/badge/Built%20with-React%20%7C%20FastAPI%20%7C%20Gemini-blue?style=for-the-badge"/></a>
+  <a href="https://github.com/usertbera/enveye-mvp"><img alt="Built With" src="https://img.shields.io/badge/Built%20with-React%20%7C%20FastAPI%20%7C%20OpenAI-blue?style=for-the-badge"/></a>
   <a href="https://github.com/usertbera/enveye-mvp/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/usertbera/enveye-mvp?style=for-the-badge"/></a>
   <img alt="Made with Python" src="https://img.shields.io/badge/Made%20with-Python%20%7C%20React-informational?style=for-the-badge"/>
   <img alt="OCR Enabled" src="https://img.shields.io/badge/OCR%20Support-Tesseract-informational?style=for-the-badge"/>
@@ -22,32 +22,55 @@
 
 **EnvEye** is a smart debugging assistant for IT environments.  
 It compares snapshots of system states (e.g., two VMs) and highlights key differences.  
-Powered by **Google Gemini AI**, it explains issues and suggests fixes instantly.
+Powered by **OpenAI**, it explains issues and suggests fixes instantly.
 
 Built for developers, DevOps, and IT support teams — to accelerate troubleshooting and root cause analysis.
 
 <p align="center">
-  <a href="https://youtu.be/dB4ALbFPf3Y" target="_blank">
-    <img src="https://img.youtube.com/vi/dB4ALbFPf3Y/0.jpg" alt="EnvEye Demo Video" width="600" style="border-radius: 8px;"/>
+  <a href="https://youtu.be/kbgjsI6xAjk" target="_blank">
+    <img src="https://github.com/user-attachments/assets/eef63ec5-aa2c-41a0-8665-15e77cf7264a" alt="EnvEye Demo Video" width="600" style="border-radius: 8px;"/>
     <br>
     <strong>▶️ Watch Demo Video</strong>
   </a>
 </p>
 
 ---
+
+## 📸 Screenshots
+
+![image](https://github.com/user-attachments/assets/eef63ec5-aa2c-41a0-8665-15e77cf7264a)
+![image](https://github.com/user-attachments/assets/c6b2a7cf-9d54-4c9b-b900-de3bc46dd945)
+![image](https://github.com/user-attachments/assets/39905967-9c60-4c65-a49a-c7e895c78a04)
+
+---
 ## 🛠️ EnvEye Architecture Diagram
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c8e44eef-55f9-40d4-b292-61944c06f509" alt="EnvEye Architecture Diagram" width="600"/>
+  <img src="https://github.com/user-attachments/assets/6386b028-fc17-45d5-8e9c-ac0748c1a6db" alt="EnvEye Architecture Diagram" width="600"/>
 </p>
 
 ----
+## 🏆 Why EnvEye Matters
 
+**EnvEye empowers IT support teams and developers to dramatically reduce Mean Time To Resolution (MTTR)** by automating the discovery of environment-related issues. Instead of manually inspecting configurations, services, DLLs, or logs, teams can rely on EnvEye’s intelligent comparison and AI-powered diagnostics.
+
+### 💡 Real-World Use Case
+
+> A support engineer receives a critical bug report from staging: “It worked yesterday.”  
+> Using EnvEye, they instantly compare snapshots from today and yesterday, OCR a provided error screenshot, and get GPT-generated insights into the root cause — saving hours of guesswork and back-and-forth debugging.
+
+### ✅ Aligned with Microsoft AI Ecosystem
+
+- Built with **Azure-compatible architecture** — can be easily adapted to use Azure OpenAI endpoints.
+- Designed as a modular **agent**, consistent with Microsoft's vision for autonomous, intelligent assistants.
+- Deployable in **Azure Functions**, container apps, or internal IT pipelines for scalable enterprise use.
+
+---
 ## 🧆 Key Features
 
 - 💾 **Snapshot Collection**: Remote/manual VM snapshot capture.
 - 🔍 **DeepDiff Comparison**: Detects changes across OS, DLLs, services, configs.
-- 🧠 **AI-Powered Analysis**: Smart diagnosis using Gemini.
+- 🧠 **AI-Powered Analysis**: Smart diagnosis using GPT.
 - 🖼️ **Screenshot Debugging**: Upload an error screenshot – OCR extracts the message!
 - 📁 **Log Path Support**: Mention a backend-accessible log file path for full AI context.
 - 📋 **Clean & Friendly UI**: View, upload, download snapshots effortlessly.
@@ -61,7 +84,7 @@ Built for developers, DevOps, and IT support teams — to accelerate troubleshoo
 | ----------- | ------------------------------------- |
 | Frontend    | React + Vite + TailwindCSS            |
 | Backend     | FastAPI (Python)                      |
-| AI Model    | Google Gemini 1.5 Pro                 |
+| AI Model    | OpenAI GPT                 |
 | OCR Engine  | Tesseract OCR (via pytesseract)       |
 | Collector   | Python Agent using WinRM              |
 | Diff Engine | DeepDiff (Python)                     |
@@ -76,7 +99,7 @@ Built for developers, DevOps, and IT support teams — to accelerate troubleshoo
    - Paste an error message
    - Upload a screenshot (auto OCR)
    - Or provide a **log file path** accessible to the backend
-4. 🧠 **Request AI Help**: All inputs are sent to Gemini for analysis.
+4. 🧠 **Request AI Help**: All inputs are sent to GPT for analysis.
 5. 🛠️ **Get Solutions**: Receive probable causes and intelligent suggestions.
 
 ---
@@ -108,8 +131,8 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 **Environment Variable Required:**
 ```bash
-export GOOGLE_API_KEY=your-api-key-here  # Linux/Mac
-set GOOGLE_API_KEY=your-api-key-here     # Windows
+export OPENAI_API_KEY=your-api-key-here  # Linux/Mac
+set OPENAI_API_KEY=your-api-key-here     # Windows
 ```
 
 **Optional: Install OCR Dependencies**
@@ -188,10 +211,9 @@ This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for
 
 ## 🙏 Acknowledgements
 
-- 🧠 Google Gemini AI
+- 🧠 OpenAI 
 - ⚡ DeepDiff for intelligent diffing
 - 🧾 Tesseract OCR
-- 📚 Microsoft Hackathon guidance
 - ❤️ Open-source community inspirations
 
 ---
