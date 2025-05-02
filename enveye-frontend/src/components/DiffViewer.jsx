@@ -168,7 +168,7 @@ function DiffViewer({ diffData }) {
 
           <input
             type="text"
-            placeholder="Optional: Enter log file path (e.g., /var/log/myapp/error.log)"
+            placeholder="Optional: Enter log file path (e.g., \var\log\myapp\error.log)"
             className="w-full px-4 py-2 border rounded mb-4 text-sm"
             value={logPath}
             onChange={(e) => setLogPath(e.target.value)}
