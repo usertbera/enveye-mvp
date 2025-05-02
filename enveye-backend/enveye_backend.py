@@ -276,26 +276,48 @@ async def download_snapshot(filename: str):
         return JSONResponse(content={"error": "File not found."}, status_code=404)
         
 # --- Utilities ---
-def normalize_log_line(line):
-    # Remove timestamps like "2025-05-01 10:33:45,123", "10:34:56", etc.
-    line = re.sub(r'\d{4}-\d{2}-\d{2}[\sT]\d{2}:\d{2}:\d{2}(?:[,\.]\d+)?', '', line)  # ISO datetime
-    line = re.sub(r'\d{2}:\d{2}:\d{2}(?:[,\.]\d+)?', '', line)  # standalone times
-    return line.strip()
+def normalize_log_block(block):
+    # Remove timestamps and join for deduplication
+    clean = re.sub(r'\d{4}-\d{2}-\d{2}[\sT]\d{2}:\d{2}:\d{2}(?:[,\.]\d+)?', '', block)
+    clean = re.sub(r'\d{2}:\d{2}:\d{2}(?:[,\.]\d+)?', '', clean)
+    return clean.strip()
 
-def extract_important_log_lines(log_text, keywords=None, max_lines=100):
+def extract_important_log_blocks(log_text, keywords=None, max_blocks=30):
+    """
+    Extracts important log blocks, including multi-line stack traces,
+    filters by keyword, deduplicates by content (ignoring timestamps),
+    and limits output to the latest N unique blocks.
+    """
     keywords = keywords or ['ERROR', 'Exception', 'Traceback', 'CRITICAL', 'Failed', 'Caused by']
-    seen = set()
-    deduped = []
-    
     lines = log_text.splitlines()
+
+    blocks = []
+    current_block = []
+    seen = set()
+
+    def commit_block():
+        if current_block:
+            full_block = "\n".join(current_block).strip()
+            norm = normalize_log_block(full_block)
+            if norm not in seen:
+                seen.add(norm)
+                blocks.append(full_block)
+            current_block.clear()
+
     for line in lines:
         if any(k in line for k in keywords):
-            normalized = normalize_log_line(line)
-            if normalized not in seen:
-                seen.add(normalized)
-                deduped.append(line)
-    
-    return "\n".join(deduped[-max_lines:])
+            commit_block()  # Save previous block before starting new one
+            current_block.append(line)
+        elif current_block and (line.startswith(" ") or line.startswith("\t") or line.strip() == ""):
+            # Likely a stack trace or continuation
+            current_block.append(line)
+        else:
+            commit_block()
+
+    commit_block()  # Final block
+
+    return "\n\n---\n\n".join(blocks[-max_blocks:])
+
 
 
 def read_log_file(path):
