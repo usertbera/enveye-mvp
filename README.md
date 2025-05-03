@@ -182,6 +182,18 @@ Write-Host "
 /enveye-backend      # FastAPI backend
 /collector           # Python agent for snapshot collection
 ```
+---
+### 🤖➕🧑‍🏫 Feedback-Driven AI (Human-in-the-Loop)
+
+EnvEye isn't just smart — it's learning-friendly.
+
+Every AI explanation can be flagged by the user as inaccurate, making the tool safer and more responsible. This allows for:
+
+- ✅ Human-in-the-loop review of misdiagnoses
+- ✅ Transparent debugging and traceability
+- ✅ Collection of edge cases for future model improvement
+
+> 🙋‍♂️ **See something wrong? Just flag it.**
 
 ---
 

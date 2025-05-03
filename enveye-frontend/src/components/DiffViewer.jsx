@@ -69,6 +69,23 @@ function DiffViewer({ diffData }) {
       alert("Please upload a valid image file.");
     }
   };
+  
+  //Handle Flags of inaapropriate analysis by AI
+  const handleFlagExplanation = async () => {
+	  try {
+		await axios.post(`${API_BASE_URL}/flag`, {
+		  diff: diffData,
+		  error_message: errorMsg,
+		  explanation: explanation,
+		  log_path: logPath
+		});
+		alert("Thank you! Your feedback has been submitted.");
+	  } catch (err) {
+		alert("Failed to submit feedback.");
+		console.error("Feedback error:", err);
+	  }
+	};
+
 
   // Render the differences as rows
   const renderChangeRow = (type, path, oldValue, newValue, index) => {
@@ -201,6 +218,13 @@ function DiffViewer({ diffData }) {
             <div id="ai-explanation" className="bg-purple-100 text-gray-800 p-4 rounded-lg shadow-md overflow-y-auto">
               <h3 className="text-xl font-semibold mb-2">📝 AI Explanation:</h3>
               <p className="whitespace-pre-line">{explanation}</p>
+			  
+			   <button
+				  onClick={handleFlagExplanation}
+				  className="mt-4 text-sm text-red-600 underline hover:text-red-800"
+				>
+				  ⚠️ Flag this explanation as inaccurate
+				</button>
             </div>
           )}
         </div>

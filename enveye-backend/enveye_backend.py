@@ -279,6 +279,18 @@ async def download_snapshot(filename: str):
     else:
         return JSONResponse(content={"error": "File not found."}, status_code=404)
         
+@app.post("/flag")
+async def flag_feedback(payload: dict = Body(...)):
+    try:
+        # Save flagged content for review or retraining
+        with open("flagged_feedback.jsonl", "a") as f:
+            f.write(json.dumps(payload) + "\n")
+        return {"message": "Feedback recorded"}
+    except Exception as e:
+        print("Feedback error:", e)
+        return {"error": str(e)}
+
+        
 # --- Utilities ---
 def read_log_file_safely(path, max_lines=200000):
     """
