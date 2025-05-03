@@ -11,7 +11,9 @@
 
 <p align="center">
   <a href="https://github.com/usertbera/enveye-mvp"><img alt="Built With" src="https://img.shields.io/badge/Built%20with-React%20%7C%20FastAPI%20%7C%20OpenAI-blue?style=for-the-badge"/></a>
-  <a href="https://github.com/usertbera/enveye-mvp/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/usertbera/enveye-mvp?style=for-the-badge"/></a>
+  <a href="https://github.com/usertbera/enveye-mvp/blob/main/LICENSE">
+  <img alt="License" src="https://img.shields.io/github/license/usertbera/enveye-mvp?style=for-the-badge&cacheSeconds=60"/>
+</a>
   <img alt="Made with Python" src="https://img.shields.io/badge/Made%20with-Python%20%7C%20React-informational?style=for-the-badge"/>
   <img alt="OCR Enabled" src="https://img.shields.io/badge/OCR%20Support-Tesseract-informational?style=for-the-badge"/>
 </p>
